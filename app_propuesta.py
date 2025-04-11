@@ -33,8 +33,10 @@ def predict(): # Ligado al endpoint '/api/v1/predict', con el método GET
     with open('modelo_pipeline_reg.pkl', 'rb') as f:
         model = pickle.load(f)
 
-    tv = request.args.get('tv', None)
-    radio = request.args.get('radio', None)
+    fixed_acidity = request.args.get('fixed acidity', None)
+    volatile_acidity = request.args.get('volatile acidity', None)
+    
+    
     newspaper = request.args.get('newspaper', None)
 
     print(tv,radio,newspaper)
