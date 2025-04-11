@@ -14,6 +14,8 @@ app = Flask(__name__)
 
 
 # Enruta la landing page (endpoint /)
+#HELLO DE RODRIGO, HAY QUE ADAPTARLO A NUESTRO TRABAJO (COMENTADO PARA PROBAR LANDPAGE CHATGPT)
+'''
 @app.route("/", methods=["GET"])
 def hello(): # Ligado al endopoint "/" o sea el home, con el método GET
     return """
@@ -21,10 +23,56 @@ def hello(): # Ligado al endopoint "/" o sea el home, con el método GET
     <p>Opciones disponibles:</p>
     <ul>
         <li><strong>/</strong> - Página inicial.</li>
-        <li><strong>/api/v1/predict</strong> - Endpoint para realizar predicciones. <br> Usa parámetros 'tv', 'radio' y 'newspaper' en la URL para predecir.</li>
+        <li><strong>/api/v1/predict</strong> - Endpoint para realizar predicciones. <br> Usa parámetros [fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol, quality, class_] en la URL para predecir.</li>
         <li><strong>/api/v1/retrain</strong> - Endpoint para reentrenar el modelo con datos nuevos. <br> Busca automáticamente el archivo 'Advertising_new.csv' en la carpeta 'data'.</li>
     </ul>
     <p>Para más información, accede a cada endpoint según corresponda.</p>
+    """
+'''
+#LANDPAGE CHATGPT PREDICCIÓN EN LANDPAGE
+@app.route("/", methods=["GET"])
+def hello():
+    return """
+    <h1>Bienvenido a la API del modelo 'Alcohol en tu vino' 🍷</h1>
+    <p>Introduce los valores del vino para predecir:</p>
+    
+    <form id="predictionForm">
+        <label>Fixed Acidity: <input name="fixed_acidity" step="any"></label><br>
+        <label>Volatile Acidity: <input name="volatile_acidity" step="any"></label><br>
+        <label>Citric Acid: <input name="citric_acid" step="any"></label><br>
+        <label>Residual Sugar: <input name="residual_sugar" step="any"></label><br>
+        <label>Chlorides: <input name="chlorides" step="any"></label><br>
+        <label>Free Sulfur Dioxide: <input name="free_sulfur_dioxide" step="any"></label><br>
+        <label>Total Sulfur Dioxide: <input name="total_sulfur_dioxide" step="any"></label><br>
+        <label>Density: <input name="density" step="any"></label><br>
+        <label>pH: <input name="pH" step="any"></label><br>
+        <label>Sulphates: <input name="sulphates" step="any"></label><br>
+        <label>Alcohol: <input name="alcohol" step="any"></label><br>
+        <label>Quality (0-10): <input name="quality" step="1"></label><br>
+        <label>Class (white/red): <input name="class_" value="white"></label><br><br>
+        <button type="submit">Predecir</button>
+    </form>
+
+    <h3>Resultado: <span id="predictionResult">---</span></h3>
+
+    <script>
+    document.getElementById("predictionForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const params = new URLSearchParams();
+        for (const [key, value] of formData.entries()) {
+            params.append(key, value);
+        }
+        fetch('/api/v1/predict?' + params.toString())
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("predictionResult").innerText = data.prediction;
+            })
+            .catch(error => {
+                document.getElementById("predictionResult").innerText = "Error: " + error;
+            });
+    });
+    </script>
     """
 
 # Enruta la funcion al endpoint /api/v1/predict
@@ -33,21 +81,60 @@ def predict(): # Ligado al endpoint '/api/v1/predict', con el método GET
     with open('modelo_pipeline_reg.pkl', 'rb') as f:
         model = pickle.load(f)
 
-    fixed_acidity = request.args.get('fixed acidity', None)
-    volatile_acidity = request.args.get('volatile acidity', None)
-    
-    
-    newspaper = request.args.get('newspaper', None)
+    fixed_acidity = request.args.get('fixed_acidity', None)
+    volatile_acidity = request.args.get('volatile_acidity', None)
+    citric_acid = request.args.get('citric_acid', None)
+    residual_sugar = request.args.get('residual_sugar', None)
+    chlorides = request.args.get('chlorides', None)
+    free_sulfur_dioxide = request.args.get('free_sulfur_dioxide', None)
+    total_sulfur_dioxide = request.args.get("total_sulfur_dioxide", None)
+    density = request.args.get('density', None)
+    pH = request.args.get('pH', None)
+    sulphates = request.args.get('sulphates', None)
+    alcohol = request.args.get('alcohol', None)
+    quality = request.args.get('quality', None)
+    class_ = request.args.get('class_', None)
 
-    print(tv,radio,newspaper)
-    print(type(tv))
 
-    if tv is None or radio is None or newspaper is None:
+    print(fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol, quality, class_)
+    print(type(fixed_acidity))
+
+    if (fixed_acidity is None or
+        volatile_acidity is None or
+        citric_acid is None or
+        residual_sugar is None or
+        chlorides is None or
+        free_sulfur_dioxide is None or
+        total_sulfur_dioxide is None or
+        density is None or
+        pH is None or
+        sulphates is None or
+        alcohol is None or
+        quality is None or
+        class_ is None):
         return "Args empty, not enough data to predict"
-    else:
-        prediction = model.predict([[float(tv),float(radio),float(newspaper)]])
     
-    return jsonify({'predictions': prediction[0]})
+    else:
+    
+        input_data = pd.DataFrame([{
+            'fixed_acidity': float(fixed_acidity),
+            'volatile_acidity': float(volatile_acidity),
+            'citric_acid': float(citric_acid),
+            'residual_sugar': float(residual_sugar),
+            'chlorides': float(chlorides),
+            'free_sulfur_dioxide': float(free_sulfur_dioxide),
+            'total_sulfur_dioxide': float(total_sulfur_dioxide),
+            'density': float(density),
+            'pH': float(pH),
+            'sulphates': float(sulphates),
+            'alcohol': float(alcohol),
+            'quality': int(quality),
+            'class_': class_
+        }])
+
+        prediction = model.predict(input_data)
+    
+    return jsonify({'prediction': float(prediction[0])})
 
 
 # Enruta la funcion al endpoint /api/v1/retrain
