@@ -64,65 +64,7 @@
       });
   });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  let chartInstance = null;
-
-  function mostrarGrafico(valorAlcohol) {
-    const ctx = document.getElementById("alcoholChart").getContext("2d");
-    document.getElementById("alcoholChart").style.display = "block";
-
-    // Destruir gráfico anterior si existe
-    if (chartInstance) chartInstance.destroy();
-
-    chartInstance = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: ["Alcohol (%)"],
-        datasets: [{
-          label: "Predicción de Alcohol",
-          data: [valorAlcohol],
-          backgroundColor: "#7c1f58"
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 20,
-            ticks: {
-              callback: function(value) {
-                return value + "%";
-              }
-            }
-          }
-        }
-      }
-    });
-  }
-
-  document.getElementById("predictionForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    const params = new URLSearchParams();
-    for (const [key, value] of formData.entries()) {
-      params.append(key, value);
-    }
-
-    fetch("/api/v1/predict?" + params.toString())
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById("resultAlert").style.display = "block";
-        document.getElementById("predictionResult").innerText = data.prediction;
-        mostrarGrafico(data.prediction);
-      })
-      .catch(error => {
-        document.getElementById("resultAlert").classList.add("alert-danger");
-        document.getElementById("resultAlert").innerText = "Error: " + error;
-      });
-  });
-</script>
 
 </body>
 </html>
+
