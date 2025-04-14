@@ -3,8 +3,10 @@ import os
 import pickle
 import pandas as pd
 from matplotlib import pyplot as plt
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
-from sklearn.metrics import mean_absolute_error, r2_score, mean_squared_error
+from sklearn.metrics import mean_absolute_error, r2_score, mean_squared_error, mean_absolute_percentage_error
+from sklearn.linear_model import Lasso
 import numpy as np
 import seaborn as sns
 
