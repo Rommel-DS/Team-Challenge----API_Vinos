@@ -187,6 +187,11 @@ def predict(): # Ligado al endpoint '/api/v1/predict', con el método GET
     return jsonify({'prediction': round(float(prediction[0]), 2)})
 
 
+# NUEVA RUTA HTML PARA EL FORMULARIO DE REENTRENAMIENTO
+@app.route("/api/v1/retrain_page", methods=["GET"])
+def retrain_page():
+    return render_template("retrain.html")
+
 
 # Enruta la funcion al endpoint /api/v1/retrain
 @app.route("/api/v1/retrain/", methods=["GET"])
