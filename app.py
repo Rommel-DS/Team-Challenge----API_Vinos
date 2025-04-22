@@ -18,7 +18,6 @@ from xgboost import XGBRegressor
 
 # os.chdir(os.path.dirname(__file__))
 
-
 import subprocess
 
 # Ejecuta el comando "pip list" y captura la salida
@@ -27,91 +26,11 @@ resultado = subprocess.run(['pip', 'list'], capture_output=True, text=True)
 # Imprime la lista de paquetes
 print(resultado.stdout)
 
-
 app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def hello():
     return render_template("index.html")
-
-# Enruta la landing page (endpoint /)
-#HELLO DE RODRIGO, HAY QUE ADAPTARLO A NUESTRO TRABAJO (COMENTADO PARA PROBAR LANDPAGE CHATGPT)
-
-# @app.route("/", methods=["GET"])
-# def hello(): # Ligado al endopoint "/" o sea el home, con el método GET
-#    return """
-#    <h1>Bienvenido a la API de nuestro modelo que estima el alcohol de tu vino</h1>
-#    <h2>Diseñado por el grupo formado por: Rommel, Rodrigo, Guillermo y Jose Luis</h2>
-#    <h3>¿Qué hace esta API?</h3>
-#    <p>Esta API permite predecir el nivel de alcohol en un vino a partir de sus características químicas y organolépticas.</p>
-#    <p>El modelo ha sido entrenado con un conjunto de datos de 6.500 vinos y utiliza técnicas de machine learning para realizar las predicciones. </p>
-#    <p>El mejor modelo elegido ha sido XGB tiene un error promedio del 2.58% en el conjunto de entrenamiento y del 2.44% en el conjunto de prueba. </p>
-#    <p>Valoramos que es consistente y preciso. </p>
-#    <p>Opciones disponibles:</p>
-#    <ul>
-#        <li><strong>/</strong> - Página inicial.</li>
-#        <a href="http://127.0.0.1:5000/" target="_blank">Página inicial</a>
-#
-#        <li><strong>/api/v1/formulario_predict</strong> - Endpoint para introducir tu formulario de predicción de alcohol, hay un ejemplo sobre el que pueder sobrescribir los datos de tu vino y te calculará el alcohol que según nuestro modelo tiene tu vino. <br> Usa parámetros [fixed_acidity, volatile_acidity, citric_acid, residual_sugar, chlorides, free_sulfur_dioxide, total_sulfur_dioxide, density, pH, sulphates, alcohol(si lo desconoces indicalo con un 0), quality, class_].</li>
-#        <a href="http://127.0.0.1:5000/api/v1/formulario_predict" target="_blank">Formulario prediccion alcohol</a>
-#               
-#        <li><strong>/api/v1/retrain</strong> - Endpoint para reentrenar el modelo con datos nuevos. <br> Busca automáticamente el archivo 'wines_retrain.csv' en la carpeta 'data'.</li>
-#        <a href="http://127.0.0.1:5000/api/v1/retrain/" target="_blank">Reentreno del modelo de prediccion alcohol</a>   
-#    </ul>
-#    <p>Para más información, accede a cada endpoint según corresponda.</p>
-#    <p>Si necesitas más información, no dudes en contactar con nosotros;)</p>
-#    <p>Gracias por tu visita, esperamos sea de tu utilidad </p>
-#
-#
-#    """
-
-
-
-#LANDPAGE CHATGPT PREDICCIÓN EN LANDPAGE
-# @app.route("/api/v1/formulario_predict", methods=["GET"])
-# def formulario_predict(): # Ligado al endopoint "/api/v1/formulario_predict", con el método GET
-#     return """
-#     <h1>Bienvenido a la API del modelo 'Alcohol en tu vino' 🍷</h1>
-#     <p>Introduce los valores del vino que quieras predecir su nivel de alcohol(te indicamos un ejemplo a sobrescribir:</p>
-    
-#     <form id="predictionForm">
-#         <label>Fixed Acidity: <input name="fixed_acidity" value=6.6></label><br>
-#         <label>Volatile Acidity: <input name="volatile_acidity" value=0.16></label><br>
-#         <label>Citric Acid: <input name="citric_acid" value=0.3></label><br>
-#         <label>Residual Sugar: <input name="residual_sugar" value=1.6></label><br>
-#         <label>Chlorides: <input name="chlorides" value=0.034></label><br>
-#         <label>Free Sulfur Dioxide: <input name="free_sulfur_dioxide" value=15.0></label><br>
-#         <label>Total Sulfur Dioxide: <input name="total_sulfur_dioxide" value=78.0></label><br>
-#         <label>Density: <input name="density" value=0.992></label><br>
-#         <label>pH: <input name="pH" value=3.38></label><br>
-#         <label>Sulphates: <input name="sulphates" value=0.44></label><br>
-#         <label>Alcohol: <input name="alcohol" value="0" readonly></label><br>
-#         <label>Quality (0-10): <input name="quality" value=6></label><br>
-#         <label>Class (white/red): <input name="class_" value="white"></label><br><br>
-#         <button type="submit">Predecir</button>
-#     </form>
-
-#     <h3>Según nuestro modelo el alcohol de tu vino es de : <span id="predictionResult">---</span> Grados</h3>
-
-#     <script>
-#     document.getElementById("predictionForm").addEventListener("submit", function(event) {
-#         event.preventDefault();
-#         const formData = new FormData(event.target);
-#         const params = new URLSearchParams();
-#         for (const [key, value] of formData.entries()) {
-#             params.append(key, value);
-#         }
-#         fetch('/api/v1/predict?' + params.toString())
-#             .then(response => response.json())
-#             .then(data => {
-#                 document.getElementById("predictionResult").innerText = data.prediction;
-#             })
-#             .catch(error => {
-#                 document.getElementById("predictionResult").innerText = "Error: " + error;
-#             });
-#     });
-#     </script>
-#     """
 
 # Enruta la funcion al endpoint /api/v1/predict
 @app.route("/api/v1/formulario_predict", methods=["GET"])
@@ -244,8 +163,6 @@ def retrain(): # Ligado al endpoint '/api/v1/retrain/', metodo GET
 
         pipe_missings_reg = Pipeline([("first_stage", imputer_step_reg)])
         
-        
-        
         XGB_pipeline = Pipeline(
              [("Preprocesado", pipe_missings_reg),  
               ("Modelo", XGBRegressor(learning_rate= 0.1, max_depth= 8, n_estimators= 400))  # Modelo de boosting basado en XGBoost
@@ -255,18 +172,10 @@ def retrain(): # Ligado al endpoint '/api/v1/retrain/', metodo GET
         XGB_pipeline.fit(X_train,y_train)
         y_pred=XGB_pipeline.predict(X_test)
         mape_test=mean_absolute_percentage_error(y_pred=y_pred,y_true=y_test)
-        # print(f"XGB cross_val media_mape: {np.mean(-resultado_reg):.4f}")  # Se invierte el signo para interpretar el MAPE positivo
-        # print(f"XGB test mape: {mape_test}")
 
-        # model = Lasso(alpha=6000)
-        # model.fit(X_train, y_train)
-        # rmse = np.sqrt(mean_squared_error(y_test, model.predict(X_test)))
-        # mape = mean_absolute_percentage_error(y_test, model.predict(X_test))
-        # model.fit(data.drop(columns=['sales']), data['sales'])
         with open('modelo_pipeline_reg.pkl', 'wb') as archivo:
             pickle.dump(XGB_pipeline, archivo)
             
-        # return f"Model retrained. New evaluation metric MAPE_train: {np.mean(-resultado_reg):.4f} y MAPE_test: {mape_test:.4f}"
         return f"Model retrained. New evaluation metric MAPE_train: {np.mean(-resultado_reg) * 100:.2f}% y MAPE_test: {mape_test * 100:.2f}%"
     else:
         return f"<h2>New data for retrain NOT FOUND. Nothing done!</h2>"
