@@ -18,6 +18,16 @@ from xgboost import XGBRegressor
 
 # os.chdir(os.path.dirname(__file__))
 
+
+import subprocess
+
+# Ejecuta el comando "pip list" y captura la salida
+resultado = subprocess.run(['pip', 'list'], capture_output=True, text=True)
+
+# Imprime la lista de paquetes
+print(resultado.stdout)
+
+
 app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
@@ -263,4 +273,7 @@ def retrain(): # Ligado al endpoint '/api/v1/retrain/', metodo GET
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
+
